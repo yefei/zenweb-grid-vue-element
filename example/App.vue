@@ -19,10 +19,8 @@
 
 <style>
 .code {
-  background-color: #eee;
-  padding: 10px 10px;
   border-radius: 5px;
-  margin-top: 20px;
+  margin: 20px 0;
   font-family: monospace;
 }
 </style>

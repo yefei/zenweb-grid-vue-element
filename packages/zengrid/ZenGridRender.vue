@@ -1,10 +1,52 @@
 <template>
   <div>
-    <el-table :data="data.data" @sort-change="sortChange" size="small" :highlight-current-row="true">
+    <div v-if="data.filters && data.filters.length" class="zen-grid-filter-header">
+      <span v-for="f of data.filters" :key="f.key" >
+        <el-dropdown v-if="f.widget === 'choice'" trigger="click" @command="v => handleFilter(f.key, v)">
+          <span class="filter-item">
+            <span>{{f.label || f.key}}</span>
+            <b v-if="f.key in filters">{{f.choices.find(i => i.value == filters[f.key]).label}}</b>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item v-for="(c, index) of f.choices" :key="index" :command="c.value">{{c.label}}</el-dropdown-item>
+            <el-dropdown-item divided>取消</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <span v-else-if="f.widget === 'date'">
+          <span class="filter-item">
+            <span>{{f.label || f.key}}</span>
+            <b v-if="f.key in filters">{{filters[f.key]}}</b>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+            <el-date-picker
+              class="date-select"
+              style="width:80px"
+              type="date"
+              format="yyyy-MM-dd"
+              v-model="filters[f.key]"
+              :editable="false"
+              :clearable="false"
+              :prefix-icon="null"
+              @change="() => getData()"
+            />
+          </span>
+        </span>
+      </span>
+    </div>
+    <el-table
+      ref="grid"
+      :data="data.data"
+      @sort-change="sortChange"
+      size="small"
+      :default-sort="defaultSort"
+      :highlight-current-row="true">
       <el-table-column
         v-for="col of data.columns"
-        :key="col.prop"
-        v-bind="col">
+        :key="col.key"
+        :prop="col.key"
+        :label="col.label || col.key"
+        :sortable="col.sortable"
+        >
       </el-table-column>
     </el-table>
     <el-pagination
@@ -21,6 +63,33 @@
 </template>
 
 <style>
+.zen-grid-filter-header {
+  padding: 7px 5px;
+  background: #f4f4f5;
+  font-size: 14px;
+}
+.zen-grid-filter-header .filter-item {
+  cursor: pointer;
+  padding: 3px 5px;
+  border-radius: 2px;
+  margin-right: 10px;
+}
+.zen-grid-filter-header .filter-item:hover {
+  background-color: rgba(0,0,0,.1);
+}
+.zen-grid-filter-header .filter-item span {
+  color: rgba(32,45,64,.6);
+}
+.zen-grid-filter-header .filter-item b {
+  margin-left: 5px;
+}
+.date-select {
+  opacity: 0;
+  border: 0;
+  position: absolute;
+  margin-left: -80px;
+  cursor: pointer;
+}
 .zen-grid-pagination {
   margin-top: 5px;
   text-align: right;
@@ -28,6 +97,8 @@
 </style>
 
 <script>
+// v-bind="col"
+
 export default {
   name: 'zen-grid-render',
   props: ['data'],
@@ -36,9 +107,17 @@ export default {
       pageSize: 10,
       currentPage: 1,
       sort: null,
+      filters: {},
     }
   },
-  created() {
+  computed: {
+    defaultSort() {
+      if (this.data.order) {
+        const isDesc = this.data.order.startsWith('-');
+        return { prop: isDesc ? this.data.order.slice(1) : this.data.order, order: isDesc ? 'descending' : 'ascending' };
+      }
+      return null;
+    },
   },
   methods: {
     getData(page) {
@@ -48,6 +127,9 @@ export default {
         offset: (this.pageSize * (page - 1)) || 0,
         order: this.sort,
       }
+      Object.entries(this.filters).forEach(([k, v]) => {
+        params[`filter_${k}`] = v;
+      });
       this.$emit('getData', params);
     },
     handleSizeChange(val) {
@@ -56,6 +138,14 @@ export default {
     },
     sortChange({ prop, order }) {
       this.sort = order ? (order === 'descending' ? `-${prop}` : prop) : null;
+      this.getData();
+    },
+    handleFilter(key, value) {
+      if (value === undefined) {
+        delete this.filters[key];
+      } else {
+        this.filters[key] = value;
+      }
       this.getData();
     },
   }
