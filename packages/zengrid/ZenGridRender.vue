@@ -1,6 +1,14 @@
 <template>
   <div>
-    <div v-if="data.filters && data.filters.length" class="zen-grid-filter-header">
+    <div v-if="data.filter.layout && data.filter.layout.length" class="zen-grid-filter-header">
+      <zen-grid-filter-field
+        v-for="key of data.filter.layout"
+        :key="key"
+        :field="data.filter.fields[key]"
+        v-model="filters[key]"
+        @input="handleFilter"
+      />
+      <!--
       <span v-for="f of data.filters" :key="f.key" >
         <el-dropdown v-if="f.widget === 'choice'" trigger="click" @command="v => handleFilter(f.key, v)">
           <span class="filter-item">
@@ -32,6 +40,7 @@
           </span>
         </span>
       </span>
+      -->
     </div>
     <el-table
       ref="grid"
@@ -99,6 +108,9 @@
 <script>
 // v-bind="col"
 
+let getDataDelay = 0;
+let getDataTimer = 0;
+
 export default {
   name: 'zen-grid-render',
   props: ['data'],
@@ -126,10 +138,8 @@ export default {
         limit: this.pageSize,
         offset: (this.pageSize * (page - 1)) || 0,
         order: this.sort,
+        ...this.filters,
       }
-      Object.entries(this.filters).forEach(([k, v]) => {
-        params[`filter_${k}`] = v;
-      });
       this.$emit('getData', params);
     },
     handleSizeChange(val) {
@@ -140,13 +150,16 @@ export default {
       this.sort = order ? (order === 'descending' ? `-${prop}` : prop) : null;
       this.getData();
     },
-    handleFilter(key, value) {
-      if (value === undefined) {
-        delete this.filters[key];
+    handleFilter() {
+      let la = Date.now() - getDataDelay;
+      // 延迟获取，防止获取频率过高
+      if (la > 500) {
+        getDataDelay = Date.now();
+        this.getData();
       } else {
-        this.filters[key] = value;
+        clearTimeout(getDataTimer);
+        getDataTimer = setTimeout(() => this.handleFilter(), la);
       }
-      this.getData();
     },
   }
 }
