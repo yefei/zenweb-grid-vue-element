@@ -53,11 +53,12 @@
 .zen-grid-filter-header .filter-item:hover {
   background-color: rgba(0,0,0,.1);
 }
-.zen-grid-filter-header .filter-item span {
+.zen-grid-filter-header .filter-item * {
   color: rgba(32,45,64,.6);
 }
 .zen-grid-filter-header .filter-item b {
   margin-left: 5px;
+  color: #333;
 }
 .zen-grid-pagination {
   margin-top: 5px;
