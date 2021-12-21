@@ -8,39 +8,6 @@
         v-model="filters[key]"
         @input="handleFilter"
       />
-      <!--
-      <span v-for="f of data.filters" :key="f.key" >
-        <el-dropdown v-if="f.widget === 'choice'" trigger="click" @command="v => handleFilter(f.key, v)">
-          <span class="filter-item">
-            <span>{{f.label || f.key}}</span>
-            <b v-if="f.key in filters">{{f.choices.find(i => i.value == filters[f.key]).label}}</b>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item v-for="(c, index) of f.choices" :key="index" :command="c.value">{{c.label}}</el-dropdown-item>
-            <el-dropdown-item divided>取消</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
-        <span v-else-if="f.widget === 'date'">
-          <span class="filter-item">
-            <span>{{f.label || f.key}}</span>
-            <b v-if="f.key in filters">{{filters[f.key]}}</b>
-            <i class="el-icon-arrow-down el-icon--right"></i>
-            <el-date-picker
-              class="date-select"
-              style="width:80px"
-              type="date"
-              format="yyyy-MM-dd"
-              v-model="filters[f.key]"
-              :editable="false"
-              :clearable="false"
-              :prefix-icon="null"
-              @change="() => getData()"
-            />
-          </span>
-        </span>
-      </span>
-      -->
     </div>
     <el-table
       ref="grid"
@@ -86,18 +53,12 @@
 .zen-grid-filter-header .filter-item:hover {
   background-color: rgba(0,0,0,.1);
 }
-.zen-grid-filter-header .filter-item span {
+.zen-grid-filter-header .filter-item * {
   color: rgba(32,45,64,.6);
 }
 .zen-grid-filter-header .filter-item b {
   margin-left: 5px;
-}
-.date-select {
-  opacity: 0;
-  border: 0;
-  position: absolute;
-  margin-left: -80px;
-  cursor: pointer;
+  color: #333;
 }
 .zen-grid-pagination {
   margin-top: 5px;
