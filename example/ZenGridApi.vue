@@ -1,4 +1,5 @@
 <template>
+import { try } from 'q';
   <div v-loading="loading">
     <zen-grid-render v-if="data" :data="data" @getData="getData" />
     <div v-else class="loading">正在载入数据</div>
@@ -30,9 +31,10 @@ export default {
       this.loading = true;
       this.$api.get(this.url, { params }).then(r => {
         this.data = r;
-        this.loading = false;
       }, e => {
         this.$message.error('数据加载错误');
+      }).finally(() => {
+        this.loading = false;
       });
     },
   }
