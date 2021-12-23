@@ -1,44 +1,52 @@
 <template>
   <div>
-    <div v-if="data.filter.layout && data.filter.layout.length" class="zen-grid-filter-header">
-      <zen-grid-filter-field
-        v-for="key of data.filter.layout"
-        :key="key"
-        :field="data.filter.fields[key]"
-        v-model="filters[key]"
-        @input="handleFilter"
-      />
+    <div v-if="data">
+      <div v-if="data.filter.layout && data.filter.layout.length" class="zen-grid-filter-header">
+        <zen-grid-filter-field
+          v-for="key of data.filter.layout"
+          :key="key"
+          :field="data.filter.fields[key]"
+          v-model="filters[key]"
+          @input="handleFilter"
+        />
+      </div>
+      <el-table
+        ref="grid"
+        :data="data.data"
+        @sort-change="sortChange"
+        size="small"
+        :default-sort="defaultSort"
+        :highlight-current-row="true">
+        <el-table-column
+          v-for="col of data.columns"
+          :key="col.key"
+          :prop="col.key"
+          :label="col.label || col.key"
+          :sortable="col.sortable"
+          >
+          <template v-if="$scopedSlots[col.key]">{{$scopedSlots[col.key]()}}</template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        class="zen-grid-pagination"
+        :current-page="currentPage"
+        background
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="data.total"
+        :page-size="pageSize"
+        @current-change="getData"
+        @size-change="handleSizeChange"
+        />
     </div>
-    <el-table
-      ref="grid"
-      :data="data.data"
-      @sort-change="sortChange"
-      size="small"
-      :default-sort="defaultSort"
-      :highlight-current-row="true">
-      <el-table-column
-        v-for="col of data.columns"
-        :key="col.key"
-        :prop="col.key"
-        :label="col.label || col.key"
-        :sortable="col.sortable"
-        >
-      </el-table-column>
-    </el-table>
-    <el-pagination
-      class="zen-grid-pagination"
-      :current-page="currentPage"
-      background
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="data.total"
-      :page-size="pageSize"
-      @current-change="getData"
-      @size-change="handleSizeChange"
-      />
+    <div v-else class="zen-grid-loading">正在载入数据</div>
   </div>
 </template>
 
 <style>
+.zen-grid-loading {
+  text-align: center;
+  line-height: 300px;
+}
 .zen-grid-filter-header {
   padding: 7px 5px;
   background: #f4f4f5;
@@ -77,10 +85,16 @@ export default {
   props: ['data'],
   data() {
     return {
+      loading: true,
       pageSize: 10,
       currentPage: 1,
       sort: null,
       filters: {},
+    }
+  },
+  watch: {
+    data() {
+      this.loading = false;
     }
   },
   computed: {
@@ -91,6 +105,9 @@ export default {
       }
       return null;
     },
+  },
+  created() {
+    console.log(this.$scopedSlots)
   },
   methods: {
     getData(page) {
