@@ -6,8 +6,16 @@
       <el-col :span="8"><el-button type="primary" @click="getData">打开表格</el-button></el-col>
     </el-row>
     <zen-grid-render :data="data" @getData="getData" v-loading="loading">
-      <template #id="a">
-        ID {{a}}
+      <template #filter-append>
+        <el-button type="primary" size="mini">添加</el-button>
+      </template>
+      <template #table-column-append>
+        <el-table-column label="操作">
+          <template slot-scope="{row}">
+            <el-link type="primary" @click="() => edit(row)">编辑</el-link>&nbsp;
+            <el-link type="danger" @click="() => del(row)">删除</el-link>
+          </template>
+        </el-table-column>
       </template>
     </zen-grid-render>
   </div>
@@ -18,7 +26,7 @@ export default {
   name: 'App',
   data() {
     return {
-      url: 'http://localhost:7001/grid',
+      url: 'http://localhost:7003/app/android/version/list',
       data: null,
       loading: true,
     }
@@ -36,6 +44,12 @@ export default {
       }).finally(() => {
         this.loading = false;
       });
+    },
+    edit(row) {
+      this.$alert(`编辑数据：${row.id}`);
+    },
+    del(row) {
+      this.$alert(`删除数据：${row.id}`);
     },
   }
 }

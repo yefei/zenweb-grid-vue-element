@@ -1,14 +1,18 @@
 <template>
   <div>
     <div v-if="data">
-      <div v-if="data.filter.layout && data.filter.layout.length" class="zen-grid-filter-header">
-        <zen-grid-filter-field
-          v-for="key of data.filter.layout"
-          :key="key"
-          :field="data.filter.fields[key]"
-          v-model="filters[key]"
-          @input="handleFilter"
-        />
+      <div v-if="haveFilter || $slots['filter-prepend'] || $slots['filter-append']" class="zen-grid-filter-header">
+        <slot name="filter-prepend" />
+        <template v-if="haveFilter">
+          <zen-grid-filter-field
+            v-for="key of data.filter.layout"
+            :key="key"
+            :field="data.filter.fields[key]"
+            v-model="filters[key]"
+            @input="handleFilter"
+          />
+        </template>
+        <slot name="filter-append" />
       </div>
       <el-table
         ref="grid"
@@ -17,26 +21,32 @@
         size="small"
         :default-sort="defaultSort"
         :highlight-current-row="true">
-        <el-table-column
-          v-for="col of data.columns"
-          :key="col.key"
-          :prop="col.key"
-          :label="col.label || col.key"
-          :sortable="col.sortable"
-          >
-          <!-- template v-if="$scopedSlots[col.key]">{{$scopedSlots[col.key]()}}</!-->
-        </el-table-column>
+        <slot name="table-column-prepend" />
+        <slot>
+          <el-table-column
+            v-for="col of data.columns"
+            :key="col.key"
+            :prop="col.key"
+            :label="col.label || col.key"
+            :sortable="col.sortable"
+          />
+        </slot>
+        <slot name="table-column-append" />
       </el-table>
-      <el-pagination
-        class="zen-grid-pagination"
-        :current-page="currentPage"
-        background
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.total"
-        :page-size="pageSize"
-        @current-change="getData"
-        @size-change="handleSizeChange"
+      <div class="zen-grid-footer">
+        <slot name="footer-prepend" />
+        <el-pagination
+          class="zen-grid-pagination"
+          :current-page="currentPage"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="data.total"
+          :page-size="pageSize"
+          @current-change="getData"
+          @size-change="handleSizeChange"
         />
+        <slot name="footer-append" />
+      </div>
     </div>
     <div v-else class="zen-grid-loading">正在载入数据</div>
   </div>
@@ -96,6 +106,12 @@ export default {
     }
   },
   computed: {
+    /**
+     * 是否有过滤项
+     */
+    haveFilter() {
+      return this.data && this.data.filter.layout && this.data.filter.layout.length > 0;
+    },
     defaultSort() {
       if (this.data.order) {
         const isDesc = this.data.order.startsWith('-');
@@ -103,9 +119,6 @@ export default {
       }
       return null;
     },
-  },
-  created() {
-    console.log(this.$scopedSlots)
   },
   methods: {
     getData(page) {
