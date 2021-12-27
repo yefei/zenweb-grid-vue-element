@@ -15,22 +15,24 @@
         <slot name="filter-append" />
       </div>
       <el-table
+        class="zen-grid-table"
         ref="grid"
         :data="data.data"
         @sort-change="sortChange"
-        size="small"
-        :default-sort="defaultSort"
-        :highlight-current-row="true">
+        :size="size"
+        :border="true"
+        :default-sort="defaultSort">
         <slot name="table-column-prepend" />
-        <slot>
-          <el-table-column
-            v-for="col of data.columns"
-            :key="col.key"
-            :prop="col.key"
-            :label="col.label || col.key"
-            :sortable="col.sortable"
-          />
-        </slot>
+        <el-table-column
+          v-for="col of data.columns"
+          :key="col.key"
+          :prop="col.key"
+          :label="col.label || col.key"
+          :sortable="col.sortable"
+          :width="col.width"
+          :min-width="col.minWidth"
+          :show-overflow-tooltip="true"
+        />
         <slot name="table-column-append" />
       </el-table>
       <div class="zen-grid-footer">
@@ -53,13 +55,27 @@
 </template>
 
 <style>
+.zen-grid-table th.el-table__cell {
+  background-color: rgb(252, 252, 252);
+}
+.zen-grid-table .el-table__cell {
+  padding: 8px 0;
+}
+.zen-grid-table .caret-wrapper {
+  height: 23px;
+}
+.zen-grid-table .sort-caret.ascending {
+  top: 0;
+}
+.zen-grid-table .sort-caret.descending {
+  bottom: 0;
+}
 .zen-grid-loading {
   text-align: center;
   line-height: 300px;
 }
 .zen-grid-filter-header {
-  padding: 7px 5px;
-  background: #f4f4f5;
+  margin: 5px;
   font-size: 14px;
 }
 .zen-grid-filter-header .filter-item {
@@ -79,8 +95,11 @@
   color: #333;
 }
 .zen-grid-pagination {
-  margin-top: 5px;
+  margin: 5px;
   text-align: right;
+}
+.zen-grid-pagination .el-pagination {
+  padding: 0;
 }
 </style>
 
@@ -90,7 +109,7 @@ let getDataTimer = 0;
 
 export default {
   name: 'zen-grid-render',
-  props: ['data'],
+  props: ['data', 'size'],
   data() {
     return {
       loading: true,

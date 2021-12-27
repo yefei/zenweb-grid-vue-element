@@ -6,9 +6,6 @@
       <el-col :span="8"><el-button type="primary" @click="getData">打开表格</el-button></el-col>
     </el-row>
     <zen-grid-render :data="data" @getData="getData" v-loading="loading">
-      <template #filter-append>
-        <el-button type="primary" size="mini">添加</el-button>
-      </template>
       <template #table-column-append>
         <el-table-column label="操作">
           <template slot-scope="{row}">
@@ -40,6 +37,7 @@ export default {
       this.$api.get(this.url, { params }).then(r => {
         this.data = r;
       }, e => {
+        console.log(e)
         this.$message.error('数据加载错误');
       }).finally(() => {
         this.loading = false;
