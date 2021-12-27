@@ -24,7 +24,7 @@
           :label="col.label || col.key"
           :sortable="col.sortable"
           >
-          <template v-if="$scopedSlots[col.key]">{{$scopedSlots[col.key]()}}</template>
+          <!-- template v-if="$scopedSlots[col.key]">{{$scopedSlots[col.key]()}}</!-->
         </el-table-column>
       </el-table>
       <el-pagination
@@ -75,8 +75,6 @@
 </style>
 
 <script>
-// v-bind="col"
-
 let getDataDelay = 0;
 let getDataTimer = 0;
 
