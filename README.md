@@ -2,6 +2,11 @@
 
 只需要一行代码即可完成数据表格渲染，所有表格项都由服务端返回，减轻前端重复工作。
 
+需要依赖的版本
+"element-ui": "^2.15.6",
+"vue": "^2.6.11",
+"vue-template-compiler": "^2.6.11"
+
 template
 ```html
 <zen-grid-render :data="data" @getData="getData" v-loading="loading">
