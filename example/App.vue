@@ -6,7 +6,14 @@
       <el-col :span="8"><el-button type="primary" @click="getData">打开表格</el-button></el-col>
     </el-row>
     <zen-grid-render :data="data" @getData="getData" v-loading="loading">
-      <template #table-column-append>
+      <template #column-by-id>
+        <el-table-column label="#" prop="id">
+          <template slot-scope="{row}">
+            # {{row.id}}
+          </template>
+        </el-table-column>
+      </template>
+      <template #column-append>
         <el-table-column label="操作">
           <template slot-scope="{row}">
             <el-link type="primary" @click="() => edit(row)">编辑</el-link>&nbsp;

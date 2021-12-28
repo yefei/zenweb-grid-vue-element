@@ -20,20 +20,22 @@
         :data="data.data"
         @sort-change="sortChange"
         :size="size"
-        :border="true"
         :default-sort="defaultSort">
-        <slot name="table-column-prepend" />
-        <el-table-column
-          v-for="col of data.columns"
-          :key="col.key"
-          :prop="col.key"
-          :label="col.label || col.key"
-          :sortable="col.sortable"
-          :width="col.width"
-          :min-width="col.minWidth"
-          :show-overflow-tooltip="true"
-        />
-        <slot name="table-column-append" />
+        <slot name="column-prepend" />
+        <template v-for="col of data.columns">
+          <slot :name="`column-by-${col.key}`" v-bind:col="col">
+            <el-table-column
+              :key="col.key"
+              :prop="col.key"
+              :label="col.label || col.key"
+              :sortable="col.sortable"
+              :width="col.width"
+              :min-width="col.minWidth"
+              :align="col.align"
+            />
+          </slot>
+        </template>
+        <slot name="column-append" />
       </el-table>
       <div class="zen-grid-footer">
         <slot name="footer-prepend" />
