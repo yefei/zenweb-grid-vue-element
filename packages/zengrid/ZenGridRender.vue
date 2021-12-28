@@ -8,6 +8,7 @@
             v-for="key of data.filter.layout"
             :key="key"
             :field="data.filter.fields[key]"
+            :size="filterSize || 'small'"
             v-model="filters[key]"
             @input="handleFilter"
           />
@@ -60,6 +61,9 @@
 .zen-grid-table th.el-table__cell {
   background-color: rgb(252, 252, 252);
 }
+.zen-grid-table {
+  border-top: 1px solid #EBEEF5;
+}
 .zen-grid-table .el-table__cell {
   padding: 8px 0;
 }
@@ -77,7 +81,7 @@
   line-height: 300px;
 }
 .zen-grid-filter-header {
-  margin: 5px;
+  padding: 5px 0;
   font-size: 14px;
 }
 .zen-grid-filter-header .filter-item {
@@ -97,7 +101,7 @@
   color: #333;
 }
 .zen-grid-pagination {
-  margin: 5px;
+  margin: 5px 0;
   text-align: right;
 }
 .zen-grid-pagination .el-pagination {
@@ -111,7 +115,7 @@ let getDataTimer = 0;
 
 export default {
   name: 'zen-grid-render',
-  props: ['data', 'size'],
+  props: ['data', 'size', 'filterSize'],
   data() {
     return {
       loading: true,

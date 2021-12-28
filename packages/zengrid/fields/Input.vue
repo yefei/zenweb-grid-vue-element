@@ -7,7 +7,7 @@
     :show-word-limit="field.validate && field.validate.maxLength > 0"
     :placeholder="field.placeholder || field.label"
     clearable
-    size="mini"
+    :size="size"
     style="width:150px;margin-right:10px;"
   />
 </template>

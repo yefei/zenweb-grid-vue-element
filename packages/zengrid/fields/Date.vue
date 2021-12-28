@@ -6,7 +6,7 @@
       type="date"
       value-format="yyyy-MM-dd"
       style="width:0;position:relative;opacity:0"
-      size="mini"
+      :size="size"
       :value="value"
       @input="input"
       :editable="false"
@@ -45,7 +45,7 @@
 
 <script>
 export default {
-  props: ['field', 'value'],
+  props: ['field', 'value', 'size'],
   methods: {
     input(value) {
       this.$emit('input', value);
