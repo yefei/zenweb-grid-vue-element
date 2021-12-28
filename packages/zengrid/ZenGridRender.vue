@@ -81,7 +81,7 @@
   line-height: 300px;
 }
 .zen-grid-filter-header {
-  padding: 5px 0;
+  padding: 10px 0;
   font-size: 14px;
 }
 .zen-grid-filter-header .filter-item {
@@ -101,7 +101,7 @@
   color: #333;
 }
 .zen-grid-pagination {
-  margin: 5px 0;
+  margin: 10px 0;
   text-align: right;
 }
 .zen-grid-pagination .el-pagination {

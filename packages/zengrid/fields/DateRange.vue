@@ -54,7 +54,8 @@
       }"
     />
     <span>{{field.label}}</span>
-    <span v-if="value">
+    <span v-if="text"><b>{{text}}</b></span>
+    <span v-else-if="value">
       <b>{{value[0]}}</b><span v-if="value[0] !== value[1]">至<b style="margin-left:0">{{value[1]}}</b></span>
     </span>
     <i class="el-icon-arrow-down el-icon--right"></i>
@@ -62,8 +63,34 @@
 </template>
 
 <script>
+import { formatDate } from 'element-ui/src/utils/date-util.js';
+
 export default {
   props: ['field', 'value', 'size'],
+  computed: {
+    text() {
+      if (this.value) {
+        if (this.value[0] === this.value[1]) {
+          const d = new Date();
+          if (this.value[0] === formatDate(d)) {
+            return '今日';
+          }
+          d.setTime(d.getTime() - 3600 * 1000 * 24);
+          if (this.value[0] === formatDate(d)) {
+            return '昨日';
+          }
+        }
+        const d = new Date();
+        if (this.value[1] === formatDate(d)) {
+          const days = Math.floor((d.getTime() - new Date(this.value[0]).getTime()) / (3600 * 1000 * 24));
+          if (days) {
+            return `最近${days}天`;
+          }
+        }
+      }
+      return '';
+    }
+  },
   methods: {
     input(value) {
       this.$emit('input', value);
