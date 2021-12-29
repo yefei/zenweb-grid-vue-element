@@ -8,7 +8,7 @@
     :placeholder="field.placeholder || field.label"
     clearable
     :size="size"
-    style="width:150px;margin-right:10px;"
+    style="width:200px;margin-right:10px;"
   />
 </template>
 
