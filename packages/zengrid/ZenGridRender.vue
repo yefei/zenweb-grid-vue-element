@@ -3,24 +3,28 @@
     <div v-if="data">
       <div v-if="haveFilter || $slots['filter-prepend'] || $slots['filter-append']" class="zen-grid-filter-header">
         <slot name="filter-prepend" />
-        <template v-if="haveFilter">
-          <zen-grid-filter-field
-            v-for="key of data.filter.layout"
-            :key="key"
-            :field="data.filter.fields[key]"
-            :size="filterSize || 'small'"
-            v-model="filters[key]"
-            @input="handleFilter"
-          />
-        </template>
+        <div class="zen-grid-filter-form">
+          <template v-if="haveFilter">
+            <zen-grid-filter-field
+              v-for="key of data.filter.layout"
+              :key="key"
+              :field="data.filter.fields[key]"
+              :size="filterSize || 'small'"
+              v-model="filters[key]"
+              @input="handleFilter"
+            />
+          </template>
+        </div>
         <slot name="filter-append" />
       </div>
       <el-table
         class="zen-grid-table"
         ref="grid"
         :data="data.data"
+        v-on="$listeners"
         @sort-change="sortChange"
         :size="size"
+        :header-cell-style="{background:'#FCFCFC',color:'#999999'}"
         :default-sort="defaultSort">
         <slot name="column-prepend" />
         <template v-for="col of data.columns">
@@ -58,23 +62,17 @@
 </template>
 
 <style>
-.zen-grid-table th.el-table__cell {
-  background-color: rgb(252, 252, 252);
-}
-.zen-grid-table {
-  border-top: 1px solid #EBEEF5;
-}
-.zen-grid-table .el-table__cell {
-  padding: 8px 0;
-}
 .zen-grid-table .caret-wrapper {
-  height: 23px;
+  height: 22px;
 }
 .zen-grid-table .sort-caret.ascending {
-  top: 0;
+  top:0;
 }
 .zen-grid-table .sort-caret.descending {
   bottom: 0;
+}
+.zen-grid-table {
+  border-top: 1px solid #EBEEF5;
 }
 .zen-grid-loading {
   text-align: center;
@@ -83,6 +81,12 @@
 .zen-grid-filter-header {
   margin-bottom: 12px;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.zen-grid-filter-form {
+  flex-grow: 1;
 }
 .zen-grid-filter-header .filter-item {
   cursor: pointer;
@@ -100,8 +104,14 @@
   margin-left: 5px;
   color: #333;
 }
-.zen-grid-pagination {
+.zen-grid-footer {
+  display: flex;
   margin-top: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.zen-grid-pagination {
+  flex-grow: 1;
   text-align: right;
 }
 .zen-grid-pagination .el-pagination {

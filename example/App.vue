@@ -6,6 +6,9 @@
       <el-col :span="8"><el-button type="primary" @click="getData">打开表格</el-button></el-col>
     </el-row>
     <zen-grid-render :data="data" @getData="getData" v-loading="loading">
+      <template #filter-append>
+        <el-button size="small" type="primary">添加</el-button>
+      </template>
       <template #column-append>
         <el-table-column label="操作" width="90">
           <template slot-scope="{row}">
@@ -14,6 +17,8 @@
           </template>
         </el-table-column>
       </template>
+      <template #footer-prepend>测试</template>
+      <template #footer-append>测试</template>
     </zen-grid-render>
   </div>
 </template>
@@ -23,7 +28,7 @@ export default {
   name: 'App',
   data() {
     return {
-      url: 'http://localhost:7003/app/android/list',
+      url: 'http://127.0.0.1:7001/company/list',
       data: null,
       loading: true,
     }
