@@ -101,7 +101,9 @@
   padding: 5px;
   border-top: 1px solid #EBEEF5;
   display: flex;
-  justify-content: center;
+}
+.zen-grid-filter-select-footer > * {
+  flex-grow: 1;
 }
 .el-dropdown-menu__item.checked {
   font-weight: bold;
