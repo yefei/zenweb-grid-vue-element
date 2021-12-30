@@ -5,7 +5,7 @@
       class="date-select"
       type="date"
       value-format="yyyy-MM-dd"
-      style="width:0;position:relative;opacity:0"
+      style="width:0;position:relative;opacity:0;padding:0;overflow:hidden;border:0"
       :size="size"
       :value="value"
       @input="input"

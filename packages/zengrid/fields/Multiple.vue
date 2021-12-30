@@ -1,34 +1,57 @@
 <template>
-  <el-dropdown trigger="click" placement="bottom" :hide-on-click="false" @command="input">
-    <span class="filter-item">
+  <el-popover
+    v-model="show"
+    popper-class="zen-grid-filter-popover"
+    placement="bottom"
+    transition="el-zoom-in-top"
+    trigger="click">
+    <el-scrollbar
+      tag="ul"
+      wrap-class="el-select-dropdown__wrap"
+      view-class="el-select-dropdown__list"
+    >
+      <li
+        class="el-dropdown-menu__item"
+        v-for="(c, index) of field.choices"
+        :key="index"
+        @click="input(c.value)"
+        :class="{ checked: value && value.includes(c.value) }"
+      >{{c.label}}</li>
+    </el-scrollbar>
+    <div class="zen-grid-filter-select-footer">
+      <el-button size="mini" type="primary" @click="ok()">确定</el-button>
+      <el-button size="mini" @click="clear()">取消</el-button>
+    </div>
+    <span slot="reference" class="filter-item">
       <span>{{field.label}}</span>
       <b v-for="v of value" :key="v">{{field.choices.find(i => i.value == v).label}}</b>
       <i class="el-icon-arrow-down el-icon--right"></i>
     </span>
-    <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item
-        v-for="(c, index) of field.choices"
-        :key="index"
-        :command="c.value"
-      ><i v-if="value && value.includes(c.value)" class="el-icon-check"></i>{{c.label}}</el-dropdown-item>
-      <el-dropdown-item divided>取消</el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
+  </el-popover>
 </template>
 
 <script>
 export default {
   props: ['field', 'value'],
+  data() {
+    return {
+      show: false,
+      selected: [],
+    }
+  },
   methods: {
+    ok() {
+      this.show = false;
+    },
+    clear() {
+      this.show = false;
+      this.$emit('input', []);
+    },
     input(value) {
-      if (!value) {
-        this.$emit('input', []);
-        return;
-      }
       const v = new Set(this.value);
       v.has(value) ? v.delete(value) : v.add(value);
       this.$emit('input', Array.from(v));
-    }
+    },
   }
 }
 </script>

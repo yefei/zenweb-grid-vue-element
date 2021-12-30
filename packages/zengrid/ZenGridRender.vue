@@ -92,6 +92,20 @@
   padding: 3px 5px;
   border-radius: 2px;
   margin-right: 10px;
+  user-select: none;
+}
+.zen-grid-filter-popover {
+  padding: 0;
+}
+.zen-grid-filter-select-footer {
+  padding: 5px;
+  border-top: 1px solid #EBEEF5;
+  display: flex;
+  justify-content: center;
+}
+.el-dropdown-menu__item.checked {
+  font-weight: bold;
+  color: #409EFF;
 }
 .zen-grid-filter-header .filter-item:hover {
   background-color: rgba(0,0,0,.1);

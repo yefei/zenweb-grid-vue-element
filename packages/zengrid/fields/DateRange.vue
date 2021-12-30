@@ -2,10 +2,9 @@
   <span class="filter-item" @click="select">
     <el-date-picker
       ref="date"
-      class="date-select"
       type="daterange"
       value-format="yyyy-MM-dd"
-      style="width:0;position:relative;opacity:0;padding:0"
+      style="width:0;position:relative;opacity:0;padding:0;overflow:hidden;border:0"
       :size="size"
       :value="value"
       @input="input"
@@ -61,6 +60,11 @@
     <i class="el-icon-arrow-down el-icon--right"></i>
   </span>
 </template>
+<style>
+.a {
+  overflow: hidden;
+}
+</style>
 
 <script>
 import { formatDate } from 'element-ui/src/utils/date-util.js';
