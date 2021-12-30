@@ -28,7 +28,7 @@ export default {
   name: 'App',
   data() {
     return {
-      url: 'http://127.0.0.1:7001/company/list',
+      url: 'http://127.0.0.1:7001/company/list/grid',
       data: null,
       loading: true,
     }

@@ -1,63 +1,62 @@
 <template>
   <div>
-    <div v-if="data">
-      <div v-if="haveFilter || $slots['filter-prepend'] || $slots['filter-append']" class="zen-grid-filter-header">
-        <slot name="filter-prepend" />
-        <div class="zen-grid-filter-form">
-          <template v-if="haveFilter">
-            <zen-grid-filter-field
-              v-for="key of data.filter.layout"
-              :key="key"
-              :field="data.filter.fields[key]"
-              :size="filterSize || 'small'"
-              v-model="filters[key]"
-              @input="handleFilter"
-            />
-          </template>
-        </div>
-        <slot name="filter-append" />
-      </div>
-      <el-table
-        class="zen-grid-table"
-        ref="grid"
-        :data="data.data"
-        v-on="$listeners"
-        @sort-change="sortChange"
-        :size="size"
-        :header-cell-style="{background:'#FCFCFC',color:'#999999'}"
-        :default-sort="defaultSort">
-        <slot name="column-prepend" />
-        <template v-for="col of data.columns">
-          <slot :name="`column-by-${col.key}`" v-bind:col="col">
-            <el-table-column
-              :key="col.key"
-              :prop="col.key"
-              :label="col.label || col.key"
-              :sortable="col.sortable"
-              :width="col.width"
-              :min-width="col.minWidth"
-              :align="col.align"
-            />
-          </slot>
+    <div v-if="haveFilter || $slots['filter-prepend'] || $slots['filter-append']" class="zen-grid-filter-header">
+      <slot name="filter-prepend" />
+      <div class="zen-grid-filter-form">
+        <template v-if="haveFilter">
+          <zen-grid-filter-field
+            v-for="key of filter.layout"
+            :key="key"
+            :field="filter.fields[key]"
+            :size="filterSize || 'small'"
+            v-model="filters[key]"
+            @input="handleFilter"
+          />
         </template>
-        <slot name="column-append" />
-      </el-table>
-      <div class="zen-grid-footer">
-        <slot name="footer-prepend" />
-        <el-pagination
-          class="zen-grid-pagination"
-          :current-page="currentPage"
-          background
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="data.total"
-          :page-size="pageSize"
-          @current-change="getData"
-          @size-change="handleSizeChange"
-        />
-        <slot name="footer-append" />
       </div>
+      <slot name="filter-append" />
     </div>
-    <div v-else class="zen-grid-loading">正在载入数据</div>
+    <el-table
+      class="zen-grid-table"
+      :data="list"
+      v-on="$listeners"
+      @sort-change="sortChange"
+      :size="size"
+      :header-cell-style="{background:'#FCFCFC',color:'#999999'}"
+      :default-sort="defaultSort">
+      <slot name="column-prepend" />
+      <el-table-column v-if="!columns" />
+      <template v-for="col of columns">
+        <slot :name="`column-by-${col.key}`" v-bind:col="col">
+          <el-table-column
+            :key="col.key"
+            :prop="col.key"
+            :label="col.label || col.key"
+            :sortable="col.sortable"
+            :width="col.width"
+            :min-width="col.minWidth"
+            :align="col.align"
+          />
+        </slot>
+      </template>
+      <slot name="column-append" />
+    </el-table>
+    <div class="zen-grid-footer">
+      <slot name="footer-prepend" />
+      <el-pagination
+        v-if="page"
+        class="zen-grid-pagination"
+        :current-page="currentPage"
+        background
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="page.total"
+        :page-size="pageSize"
+        @current-change="getData"
+        @size-change="handleSizeChange"
+      />
+      <div v-else class="zen-grid-pagination" />
+      <slot name="footer-append" />
+    </div>
   </div>
 </template>
 
@@ -123,21 +122,29 @@
 let getDataDelay = 0;
 let getDataTimer = 0;
 
+// includes=filter,columns,page,data
+
 export default {
   name: 'zen-grid-render',
   props: ['data', 'size', 'filterSize'],
   data() {
     return {
-      loading: true,
       pageSize: 10,
       currentPage: 1,
       sort: null,
       filters: {},
+      filter: null,
+      columns: null,
+      page: null,
+      list: [],
     }
   },
   watch: {
     data() {
-      this.loading = false;
+      if (this.data.filter) this.filter = this.data.filter;
+      if (this.data.columns) this.columns = this.data.columns;
+      if (this.data.page) this.page = this.data.page;
+      if (this.data.data) this.list = this.data.data;
     }
   },
   computed: {
@@ -145,23 +152,27 @@ export default {
      * 是否有过滤项
      */
     haveFilter() {
-      return this.data && this.data.filter.layout && this.data.filter.layout.length > 0;
+      return this.filter && this.filter.layout && this.filter.layout.length > 0;
     },
     defaultSort() {
-      if (this.data.order) {
-        const isDesc = this.data.order.startsWith('-');
-        return { prop: isDesc ? this.data.order.slice(1) : this.data.order, order: isDesc ? 'descending' : 'ascending' };
+      if (this.page && this.page.order) {
+        const isDesc = this.page.order.startsWith('-');
+        return { prop: isDesc ? this.page.order.slice(1) : this.page.order, order: isDesc ? 'descending' : 'ascending' };
       }
-      return null;
+      return {};
     },
   },
   methods: {
     getData(page) {
       this.currentPage = page || 1;
+      const includes = ['data', 'page'];
+      if (!this.filter) includes.push('filter');
+      if (!this.columns) includes.push('columns');
       const params = {
         limit: this.pageSize,
         offset: (this.pageSize * (page - 1)) || 0,
         order: this.sort,
+        includes: includes.join(','),
         ...this.filters,
       }
       this.$emit('getData', params);
