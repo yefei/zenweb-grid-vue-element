@@ -1,6 +1,6 @@
 {
   "name": "@zenweb/grid-vue-element",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": false,
   "license": "MIT",
   "main": "lib/zengrid.umd.min.js",
