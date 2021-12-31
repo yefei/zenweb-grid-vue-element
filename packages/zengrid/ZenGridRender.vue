@@ -17,6 +17,7 @@
       <slot name="filter-append" />
     </div>
     <el-table
+      v-if="columns"
       class="zen-grid-table"
       :data="list"
       v-on="$listeners"
@@ -25,7 +26,6 @@
       :header-cell-style="{background:'#FCFCFC',color:'#999999'}"
       :default-sort="defaultSort">
       <slot name="column-prepend" />
-      <el-table-column v-if="!columns" />
       <template v-for="col of columns">
         <slot :name="`column-by-${col.key}`" v-bind:col="col">
           <el-table-column
@@ -41,6 +41,7 @@
       </template>
       <slot name="column-append" />
     </el-table>
+    <div v-else class="zen-grid-table-loading">正在载入表格</div>
     <div class="zen-grid-footer">
       <slot name="footer-prepend" />
       <el-pagination
@@ -86,6 +87,14 @@
 }
 .zen-grid-filter-form {
   flex-grow: 1;
+}
+.zen-grid-table-loading {
+  text-align: center;
+  padding: 30px 0;
+  border-top: 1px solid #EBEEF5;
+  border-bottom: 1px solid #EBEEF5;
+  color: #999;
+  font-size: 14px;
 }
 .zen-grid-filter-header .filter-item {
   cursor: pointer;
