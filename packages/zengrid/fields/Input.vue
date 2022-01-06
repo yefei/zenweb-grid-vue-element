@@ -8,7 +8,8 @@
     :placeholder="field.placeholder || field.label"
     clearable
     :size="size"
-    style="width:200px;margin-right:10px;"
+    suffix-icon="el-icon-search"
+    style="width:200px;margin-right:25px;"
   />
 </template>
 

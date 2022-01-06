@@ -2,8 +2,8 @@
   <el-popover
     v-model="show"
     popper-class="zen-grid-filter-popover"
-    placement="right"
-    transition="el-zoom-in-top"
+    placement="right-start"
+    transition="none"
     trigger="hover">
     <el-scrollbar
       tag="ul"

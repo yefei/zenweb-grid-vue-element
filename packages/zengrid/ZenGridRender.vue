@@ -100,7 +100,7 @@
   cursor: pointer;
   padding: 3px 5px;
   border-radius: 2px;
-  margin-right: 10px;
+  margin-right: 20px;
   user-select: none;
 }
 .zen-grid-filter-popover {
@@ -154,7 +154,6 @@ export default {
   props: ['data', 'size', 'filterSize'],
   data() {
     return {
-      pageSize: 10,
       currentPage: 1,
       sort: null,
       filters: {},
@@ -186,16 +185,19 @@ export default {
       }
       return {};
     },
+    pageSize() {
+      return this.page ? this.page.limit : 10;
+    }
   },
   methods: {
-    getData(page) {
-      this.currentPage = page || 1;
+    getData(currentPage) {
+      this.currentPage = currentPage || 1;
       const includes = ['data', 'page'];
       if (!this.filter) includes.push('filter');
       if (!this.columns) includes.push('columns');
       const params = {
         limit: this.pageSize,
-        offset: (this.pageSize * (page - 1)) || 0,
+        offset: (this.pageSize * (currentPage - 1)) || 0,
         order: this.sort,
         includes: includes.join(','),
         ...this.filters,
@@ -203,7 +205,7 @@ export default {
       this.$emit('getData', params);
     },
     handleSizeChange(val) {
-      this.pageSize = val;
+      this.page.limit = val;
       this.getData();
     },
     sortChange({ prop, order }) {
