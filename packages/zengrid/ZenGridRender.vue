@@ -102,6 +102,7 @@
   border-radius: 2px;
   margin-right: 20px;
   user-select: none;
+  white-space: nowrap;
 }
 .zen-grid-filter-popover {
   padding: 0;
@@ -113,6 +114,9 @@
 }
 .zen-grid-filter-select-footer > * {
   flex-grow: 1;
+}
+.zen-grid-filter-select-footer .el-button+.el-button {
+  margin-left: 5px;
 }
 .el-dropdown-menu__item.checked {
   font-weight: bold;
