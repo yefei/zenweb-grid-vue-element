@@ -3,9 +3,12 @@
     <h1>zenweb-grid-vue 自动表格演示</h1>
     <el-row :gutter="20" style="margin-bottom:10px">
       <el-col :span="16"><el-input v-model="url" placeholder="输入表格接口地址"></el-input></el-col>
-      <el-col :span="8"><el-button type="primary" @click="getData">打开表格</el-button></el-col>
+      <el-col :span="8">
+        <el-button type="primary" @click="getData">打开表格</el-button>
+        <el-button type="success" @click="refreshData">刷新表格</el-button>
+      </el-col>
     </el-row>
-    <zen-grid-render :data="data" @getData="getData" v-loading="loading">
+    <zen-grid-render ref="grid" :data="data" @getData="getData" v-loading="loading">
       <template #filter-append>
         <el-button size="small" type="primary">添加</el-button>
       </template>
@@ -47,6 +50,10 @@ export default {
       }).finally(() => {
         this.loading = false;
       });
+    },
+    refreshData() {
+      // 刷新演示, 保持当前表格筛选和分页状态，并重新载入数据
+      this.$refs.grid.getData();
     },
     edit(row) {
       this.$alert(`编辑数据：${row.id}`);

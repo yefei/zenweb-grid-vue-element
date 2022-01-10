@@ -192,7 +192,10 @@ export default {
       this.filterErrors = this.data.filterErrors;
       if (this.data.filterForm) this.filterForm = this.data.filterForm;
       if (this.data.columns) this.columns = this.data.columns;
-      if (this.data.page) this.page = this.data.page;
+      if (this.data.page) {
+        this.page = this.data.page;
+        this.currentPage = Math.floor(this.data.page.offset / this.data.page.limit) + 1;
+      }
       if (this.data.data) this.list = this.data.data;
     }
   },
@@ -216,13 +219,13 @@ export default {
   },
   methods: {
     getData(currentPage) {
-      this.currentPage = currentPage || 1;
+      if (currentPage) this.currentPage = currentPage;
       const includes = ['data', 'page'];
       if (!this.filterForm) includes.push('filter');
       if (!this.columns) includes.push('columns');
       const params = {
         limit: this.pageSize,
-        offset: (this.pageSize * (currentPage - 1)) || 0,
+        offset: (this.pageSize * (this.currentPage - 1)) || 0,
         order: this.sort,
         includes: includes.join(','),
         ...this.filterData,
@@ -231,18 +234,18 @@ export default {
     },
     handleSizeChange(val) {
       this.page.limit = val;
-      this.getData();
+      this.getData(1);
     },
     sortChange({ prop, order }) {
       this.sort = order ? (order === 'descending' ? `-${prop}` : prop) : null;
-      this.getData();
+      this.getData(1);
     },
     handleFilter() {
       let la = Date.now() - getDataDelay;
       // 延迟获取，防止获取频率过高
       if (la > 500) {
         getDataDelay = Date.now();
-        this.getData();
+        this.getData(1);
       } else {
         clearTimeout(getDataTimer);
         getDataTimer = setTimeout(() => this.handleFilter(), la);
