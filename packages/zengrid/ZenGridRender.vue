@@ -52,7 +52,7 @@
         background
         layout="total, sizes, prev, pager, next, jumper"
         :total="page.total"
-        :page-size="pageSize"
+        :page-size="page.limit"
         @current-change="getData"
         @size-change="handleSizeChange"
       />
@@ -213,9 +213,6 @@ export default {
       }
       return {};
     },
-    pageSize() {
-      return this.page ? this.page.limit : 10;
-    }
   },
   methods: {
     getData(currentPage) {
@@ -224,11 +221,13 @@ export default {
       if (!this.filterForm) includes.push('filter');
       if (!this.columns) includes.push('columns');
       const params = {
-        limit: this.pageSize,
-        offset: (this.pageSize * (this.currentPage - 1)) || 0,
         order: this.sort,
         includes: includes.join(','),
         ...this.filterData,
+      };
+      if (this.page) {
+        params.limit = this.page.limit;
+        params.offset = this.page.limit * (this.currentPage - 1);
       }
       this.$emit('getData', params);
     },
