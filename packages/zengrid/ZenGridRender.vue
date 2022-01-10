@@ -5,11 +5,12 @@
       <div class="zen-grid-filter-form">
         <template v-if="haveFilter">
           <zen-grid-filter-field
-            v-for="key of filter.layout"
+            v-for="key of filterForm.layout"
             :key="key"
-            :field="filter.fields[key]"
+            :field="filterForm.fields[key]"
             :size="filterSize || 'small'"
-            v-model="filters[key]"
+            :error="filterErrors && filterErrors[key]"
+            v-model="filterData[key]"
             @input="handleFilter"
           />
         </template>
@@ -87,6 +88,12 @@
 }
 .zen-grid-filter-form {
   flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+.zen-grid-filter-form-field {
+  margin-right: 20px;
 }
 .zen-grid-table-loading {
   text-align: center;
@@ -97,10 +104,10 @@
   font-size: 14px;
 }
 .zen-grid-filter-header .filter-item {
+  display: block;
   cursor: pointer;
   padding: 3px 5px;
   border-radius: 2px;
-  margin-right: 20px;
   user-select: none;
   white-space: nowrap;
 }
@@ -123,7 +130,7 @@
   color: #409EFF;
 }
 .zen-grid-filter-header .filter-item:hover {
-  background-color: rgba(0,0,0,.1);
+  background-color: rgba(0,0,0,.04);
 }
 .zen-grid-filter-header .filter-item * {
   color: rgba(32,45,64,.6);
@@ -145,13 +152,24 @@
 .zen-grid-pagination .el-pagination {
   padding: 0;
 }
+.zen-filter-item-error {
+  border-radius: 5px;
+  background-color: #fef0f0;
+  display: flex;
+  flex-direction: column;
+}
+.zen-filter-item-error-message {
+  display: block;
+  color: #f56c6c;
+  font-size: 12px;
+  padding: 0 5px;
+  padding-bottom: 3px;
+}
 </style>
 
 <script>
 let getDataDelay = 0;
 let getDataTimer = 0;
-
-// includes=filter,columns,page,data
 
 export default {
   name: 'zen-grid-render',
@@ -160,8 +178,9 @@ export default {
     return {
       currentPage: 1,
       sort: null,
-      filters: {},
-      filter: null,
+      filterData: {},
+      filterForm: null,
+      filterErrors: null,
       columns: null,
       page: null,
       list: [],
@@ -169,7 +188,9 @@ export default {
   },
   watch: {
     data() {
-      if (this.data.filter) this.filter = this.data.filter;
+      this.filterData = this.data.filterData;
+      this.filterErrors = this.data.filterErrors;
+      if (this.data.filterForm) this.filterForm = this.data.filterForm;
       if (this.data.columns) this.columns = this.data.columns;
       if (this.data.page) this.page = this.data.page;
       if (this.data.data) this.list = this.data.data;
@@ -180,7 +201,7 @@ export default {
      * 是否有过滤项
      */
     haveFilter() {
-      return this.filter && this.filter.layout && this.filter.layout.length > 0;
+      return this.filterForm && this.filterForm.layout.length > 0;
     },
     defaultSort() {
       if (this.page && this.page.order) {
@@ -197,14 +218,14 @@ export default {
     getData(currentPage) {
       this.currentPage = currentPage || 1;
       const includes = ['data', 'page'];
-      if (!this.filter) includes.push('filter');
+      if (!this.filterForm) includes.push('filter');
       if (!this.columns) includes.push('columns');
       const params = {
         limit: this.pageSize,
         offset: (this.pageSize * (currentPage - 1)) || 0,
         order: this.sort,
         includes: includes.join(','),
-        ...this.filters,
+        ...this.filterData,
       }
       this.$emit('getData', params);
     },

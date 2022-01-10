@@ -44,7 +44,7 @@
 import CascaderPopover from '../components/CascaderPopover.vue';
 
 export default {
-  props: ['field', 'value'],
+  props: ['field', 'value', 'size'],
   components: {
     CascaderPopover,
   },

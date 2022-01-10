@@ -32,7 +32,7 @@
 
 <script>
 export default {
-  props: ['field', 'value'],
+  props: ['field', 'value', 'size'],
   data() {
     return {
       show: false,
